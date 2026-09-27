@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swiggy - Food Delivery & Grocery</title>
+    <title>Swiggy - Food Delivery, Instamart & Dineout</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <!-- NAVBAR -->
-<header class="navbar">
+<header class="navbar" id="home">
     <div class="top-navbar">
-        <div class="logo">
-            <!-- Uses your logo with an SVG fallback if the image file isn't found -->
+        <div class="logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            <!-- Logo with SVG fallback -->
             <img src="swiggy.logo.png" alt="SWIGGY" onerror="this.style.display='none'; document.getElementById('svg-logo').style.display='block';">
             <svg id="svg-logo" style="display:none; width:40px; height:40px; fill:white;" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
@@ -33,7 +33,7 @@
 
     <div class="hungry-text">
         <h1>Hungry? We've got you covered!</h1>
-        <p>Order delicious food & instant groceries delivered in minutes</p>
+        <p>Order delicious food, instant groceries & book dining tables in seconds</p>
     </div>
 </header>
 
@@ -52,7 +52,7 @@
     <!-- 3 SERVICE BOXES (Food Delivery, Instamart, Dineout) -->
     <section class="boxes">
         <!-- FOOD DELIVERY -->
-        <div class="box">
+        <div class="box" onclick="scrollToRestaurants()">
             <div class="box-content">
                 <h2>FOOD DELIVERY</h2>
                 <h6>FROM RESTAURANTS</h6>
@@ -62,20 +62,20 @@
         </div>
 
         <!-- INSTAMART -->
-        <div class="box">
+        <div class="box" onclick="openInstamart()">
             <div class="box-content">
                 <h2>INSTAMART</h2>
-                <h6>INSTANT GROCERY</h6>
+                <h6>INSTANT GROCERY (10 MINS)</h6>
                 <img class="arrow" src="arrow.logo.png" alt="arrow">
             </div>
             <img class="service-image" src="instamart.png" alt="Instamart">
         </div>
 
         <!-- DINEOUT -->
-        <div class="box">
+        <div class="box" onclick="openDineout()">
             <div class="box-content">
                 <h2>DINEOUT</h2>
-                <h6>EAT OUT & SAVE MORE</h6>
+                <h6>EAT OUT & SAVE UPTO 40%</h6>
                 <img class="arrow" src="arrow.logo.png" alt="arrow">
             </div>
             <img class="service-image" src="Dineout.png" alt="Dineout">
@@ -123,6 +123,7 @@
     <section class="section" id="restaurants">
         <div class="section-header">
             <h2>Top restaurant chains in your city</h2>
+            <p class="section-subtext">Click on any restaurant to explore its full menu & special dishes</p>
         </div>
 
         <!-- Filter Chips -->
@@ -141,34 +142,405 @@
     </section>
 </main>
 
+<!-- FLOATING BOTTOM CART BAR (FOR MOBILE & EASY ACCESS) -->
+<div class="floating-cart-bar" id="floating-cart-bar" onclick="openCart()">
+    <div class="floating-cart-info">
+        <span class="floating-cart-count" id="float-cart-count">0 items</span>
+        <span class="floating-cart-divider">|</span>
+        <span class="floating-cart-total" id="float-cart-total">₹0</span>
+    </div>
+    <div class="floating-cart-action">
+        <span>VIEW CART</span>
+        <span class="floating-cart-icon">🛒</span>
+    </div>
+</div>
+
 <!-- SLIDE-IN CART DRAWER -->
 <div class="cart-drawer-overlay" id="cart-overlay"></div>
 <div class="cart-drawer" id="cart-drawer">
     <div class="drawer-header">
-        <h3>Your Cart</h3>
+        <div class="drawer-header-title">
+            <h3>Your Cart</h3>
+            <span class="cart-subhead" id="cart-subhead">0 Items</span>
+        </div>
         <button class="close-btn" id="close-cart-btn">✕</button>
     </div>
+
+    <!-- CART ITEMS LIST -->
     <div class="cart-items" id="cart-items-container">
         <!-- Injected via JavaScript -->
     </div>
+
+    <!-- CART FOOTER WITH COUPONS & BILL -->
     <div class="cart-footer" id="cart-footer">
-        <div class="bill-row">
-            <span>Item Total</span>
-            <span id="bill-subtotal">₹0</span>
+        <!-- COUPON SECTION -->
+        <div class="coupon-section">
+            <div class="coupon-input-box">
+                <span class="coupon-tag-icon">🏷️</span>
+                <input type="text" id="coupon-code-input" placeholder="Enter coupon (e.g. SWIGGY50)">
+                <button id="apply-coupon-btn" onclick="applyCoupon()">APPLY</button>
+            </div>
+            
+            <!-- Quick Coupon Chips -->
+            <div class="coupon-chips-list">
+                <span class="coupon-chip" onclick="quickApplyCoupon('SWIGGY50')">⚡ SWIGGY50 (50% OFF)</span>
+                <span class="coupon-chip" onclick="quickApplyCoupon('WELCOME100')">🎉 WELCOME100 (₹100 OFF)</span>
+                <span class="coupon-chip" onclick="quickApplyCoupon('TASTY20')">🔥 TASTY20 (20% OFF)</span>
+            </div>
+
+            <!-- Active Coupon Display -->
+            <div class="active-coupon-badge" id="active-coupon-badge" style="display: none;">
+                <div class="active-coupon-info">
+                    <span class="active-coupon-icon">✅</span>
+                    <div>
+                        <strong id="active-coupon-code">SWIGGY50</strong> applied
+                        <div class="active-coupon-savings" id="active-coupon-savings">You saved ₹0</div>
+                    </div>
+                </div>
+                <button class="remove-coupon-btn" onclick="removeCoupon()">✕</button>
+            </div>
         </div>
-        <div class="bill-row">
-            <span>Delivery Fee</span>
-            <span id="bill-delivery">₹40</span>
+
+        <!-- BILL DETAILS -->
+        <div class="bill-details">
+            <div class="bill-row">
+                <span>Item Total</span>
+                <span id="bill-subtotal">₹0</span>
+            </div>
+            <div class="bill-row coupon-discount-row" id="bill-discount-row" style="display: none;">
+                <span>Coupon Discount</span>
+                <span class="discount-amount" id="bill-discount">-₹0</span>
+            </div>
+            <div class="bill-row">
+                <span>Delivery Fee</span>
+                <span id="bill-delivery">₹40</span>
+            </div>
+            <div class="bill-row">
+                <span>GST & Restaurant Charges</span>
+                <span id="bill-tax">₹15</span>
+            </div>
+            <div class="bill-row total">
+                <span>To Pay</span>
+                <span id="bill-total">₹0</span>
+            </div>
         </div>
-        <div class="bill-row">
-            <span>GST & Restaurant Charges</span>
-            <span id="bill-tax">₹15</span>
+
+        <button class="checkout-btn" onclick="openCheckout()">PROCEED TO CHECKOUT</button>
+    </div>
+</div>
+
+<!-- RESTAURANT FULL MENU MODAL -->
+<div class="modal-overlay" id="menu-overlay"></div>
+<div class="menu-modal" id="menu-modal">
+    <div class="menu-modal-header" id="menu-modal-header">
+        <!-- Injected via JavaScript -->
+    </div>
+    
+    <div class="menu-filter-bar">
+        <div class="veg-toggle-wrap">
+            <label class="switch">
+                <input type="checkbox" id="menu-veg-toggle" onchange="toggleMenuVegFilter()">
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">🌱 Veg Only</span>
         </div>
-        <div class="bill-row total">
-            <span>To Pay</span>
-            <span id="bill-total">₹0</span>
+        <div class="menu-search-wrap">
+            <input type="text" id="menu-search-input" placeholder="Search in this menu..." oninput="handleMenuSearch()">
         </div>
-        <button class="checkout-btn" onclick="checkout()">PROCEED TO CHECKOUT</button>
+    </div>
+
+    <div class="menu-modal-body" id="menu-items-container">
+        <!-- Dishes Injected via JavaScript -->
+    </div>
+
+    <div class="menu-modal-footer">
+        <button class="menu-close-action-btn" onclick="closeMenuModal()">Close Menu</button>
+        <button class="menu-view-cart-action-btn" onclick="closeMenuModal(); openCart();">
+            View Cart (<span id="menu-cart-count">0</span> items)
+        </button>
+    </div>
+</div>
+
+<!-- INSTAMART GROCERY MODAL -->
+<div class="modal-overlay" id="instamart-overlay"></div>
+<div class="instamart-modal" id="instamart-modal">
+    <div class="instamart-header">
+        <div class="instamart-branding">
+            <span class="instamart-badge">⚡ 10 MINS DELIVERY</span>
+            <h2>Swiggy Instamart</h2>
+            <p>Groceries, fresh fruits, vegetables, snacks & dairy at your doorstep</p>
+        </div>
+        <button class="close-btn" onclick="closeInstamart()">✕</button>
+    </div>
+
+    <!-- Category selector for Instamart -->
+    <div class="instamart-category-tabs" id="instamart-tabs">
+        <button class="im-tab active" onclick="filterInstamart('all')">All Items</button>
+        <button class="im-tab" onclick="filterInstamart('Produce')">🍎 Fresh Produce</button>
+        <button class="im-tab" onclick="filterInstamart('Dairy')">🥛 Dairy & Bread</button>
+        <button class="im-tab" onclick="filterInstamart('Snacks')">🍿 Snacks & Munchies</button>
+        <button class="im-tab" onclick="filterInstamart('Drinks')">🥤 Drinks & Juices</button>
+    </div>
+
+    <!-- Grocery items grid -->
+    <div class="instamart-grid" id="instamart-items-grid">
+        <!-- Populated via script.js -->
+    </div>
+
+    <div class="instamart-footer">
+        <button class="instamart-view-cart-btn" onclick="closeInstamart(); openCart();">
+            🛒 Go to Cart & Checkout
+        </button>
+    </div>
+</div>
+
+<!-- DINEOUT TABLE RESERVATION MODAL -->
+<div class="modal-overlay" id="dineout-overlay"></div>
+<div class="dineout-modal" id="dineout-modal">
+    <div class="dineout-header">
+        <div>
+            <h2>Swiggy Dineout 🍽️</h2>
+            <p>Book a table, skip the waiting queue & save up to 40% on your dining bill</p>
+        </div>
+        <button class="close-btn" onclick="closeDineout()">✕</button>
+    </div>
+
+    <div class="dineout-body">
+        <div class="dineout-left-pane">
+            <h4>Select Dineout Partner Restaurant</h4>
+            <div class="dineout-restaurants-list" id="dineout-restaurants-list">
+                <!-- Injected via script.js -->
+            </div>
+        </div>
+
+        <div class="dineout-right-pane">
+            <h4>Booking Details</h4>
+            <form id="dineout-form" onsubmit="handleDineoutBooking(event)">
+                <div class="form-row">
+                    <label>Selected Restaurant</label>
+                    <input type="text" id="dineout-selected-name" readonly value="Biryani By Kilo - Fine Dine">
+                </div>
+
+                <div class="form-row-group">
+                    <div class="form-row">
+                        <label>Date</label>
+                        <input type="date" id="dineout-date" required>
+                    </div>
+                    <div class="form-row">
+                        <label>Time Slot</label>
+                        <select id="dineout-time" required>
+                            <option value="12:30 PM">12:30 PM (Lunch)</option>
+                            <option value="01:30 PM">01:30 PM (Lunch)</option>
+                            <option value="07:30 PM" selected>07:30 PM (Dinner)</option>
+                            <option value="08:30 PM">08:30 PM (Dinner)</option>
+                            <option value="09:30 PM">09:30 PM (Dinner)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row-group">
+                    <div class="form-row">
+                        <label>Number of Guests</label>
+                        <select id="dineout-guests">
+                            <option value="1">1 Person</option>
+                            <option value="2" selected>2 Guests (Table for 2)</option>
+                            <option value="4">4 Guests (Family Table)</option>
+                            <option value="6">6 Guests</option>
+                            <option value="8">8+ Guests (Party)</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <label>Dining Offer</label>
+                        <div class="dineout-offer-pill" id="dineout-offer-tag">🏷️ 25% OFF Food Bill</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label>Guest Full Name</label>
+                    <input type="text" id="dineout-guest-name" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-row">
+                    <label>Contact Phone Number</label>
+                    <input type="tel" id="dineout-guest-phone" placeholder="10-digit mobile number" maxlength="10" required>
+                </div>
+
+                <button type="submit" class="dineout-confirm-btn">CONFIRM TABLE RESERVATION</button>
+            </form>
+
+            <!-- Booking Success Card -->
+            <div class="dineout-success-card" id="dineout-success-card" style="display: none;">
+                <div class="success-icon">🎉</div>
+                <h3>Reservation Confirmed!</h3>
+                <p>Your table has been reserved with an instant dining offer discount.</p>
+                <div class="reservation-details" id="reservation-details"></div>
+                <button class="dineout-action-btn" onclick="resetDineoutBooking()">Book Another Table</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MULTI-STEP CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkout-overlay"></div>
+<div class="checkout-modal" id="checkout-modal">
+    <button class="close-btn" onclick="closeCheckout()">✕</button>
+    <div class="checkout-content">
+        <h2>Order Checkout</h2>
+        <p class="checkout-sub">Complete your details to place your Swiggy order</p>
+
+        <!-- Step 1: Delivery Address -->
+        <div class="checkout-section">
+            <h4>1. Select Delivery Address</h4>
+            <div class="address-options">
+                <label class="address-card selected">
+                    <input type="radio" name="address" value="home" checked>
+                    <div class="address-details">
+                        <strong>🏠 Home</strong>
+                        <p>Flat 402, Sunshine Apartments, MG Road, Bangalore</p>
+                    </div>
+                </label>
+                <label class="address-card">
+                    <input type="radio" name="address" value="work">
+                    <div class="address-details">
+                        <strong>💼 Work / Office</strong>
+                        <p>Tower B, Cyber Tech Park, Outer Ring Road, Bangalore</p>
+                    </div>
+                </label>
+                <label class="address-card">
+                    <input type="radio" name="address" value="custom">
+                    <div class="address-details">
+                        <strong>📍 Other Address</strong>
+                        <input type="text" id="custom-address-input" placeholder="Enter complete address, house/flat no...">
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Step 2: Payment Method -->
+        <div class="checkout-section">
+            <h4>2. Payment Method</h4>
+            <div class="payment-options">
+                <label class="payment-card selected">
+                    <input type="radio" name="payment" value="upi" checked>
+                    <div class="payment-details">
+                        <span class="pay-icon">📱</span>
+                        <div>
+                            <strong>UPI (Google Pay, PhonePe, Paytm)</strong>
+                            <p>Instant contactless & secure payment</p>
+                        </div>
+                    </div>
+                </label>
+                <label class="payment-card">
+                    <input type="radio" name="payment" value="card">
+                    <div class="payment-details">
+                        <span class="pay-icon">💳</span>
+                        <div>
+                            <strong>Credit or Debit Card</strong>
+                            <p>Visa, MasterCard, RuPay accepted</p>
+                        </div>
+                    </div>
+                </label>
+                <label class="payment-card">
+                    <input type="radio" name="payment" value="cod">
+                    <div class="payment-details">
+                        <span class="pay-icon">💵</span>
+                        <div>
+                            <strong>Cash on Delivery (COD)</strong>
+                            <p>Pay cash or UPI upon delivery</p>
+                        </div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Summary & Place Order Button -->
+        <div class="checkout-summary">
+            <div class="summary-line">
+                <span>Final Amount to Pay:</span>
+                <strong id="checkout-final-total">₹0</strong>
+            </div>
+            <button class="place-order-btn" onclick="confirmAndPlaceOrder()">
+                PLACE ORDER & START TRACKING 🚀
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- LIVE ORDER TRACKING MODAL -->
+<div class="modal-overlay" id="tracker-overlay"></div>
+<div class="tracker-modal" id="tracker-modal">
+    <div class="tracker-header">
+        <div>
+            <div class="tracker-live-tag"><span class="pulse-dot"></span> LIVE ORDER TRACKING</div>
+            <h2 id="tracker-order-id">Order #SWG-89412</h2>
+            <p id="tracker-est-time">Estimated delivery in <strong id="countdown-timer">24 mins</strong></p>
+        </div>
+        <button class="close-btn" onclick="closeTracker()">✕</button>
+    </div>
+
+    <!-- Stepper animation -->
+    <div class="tracking-stepper" id="tracking-stepper">
+        <div class="step active" id="step-1">
+            <div class="step-icon">📋</div>
+            <div class="step-content">
+                <strong>Order Confirmed</strong>
+                <p>Restaurant has accepted your order</p>
+            </div>
+        </div>
+        <div class="step-line active" id="line-1"></div>
+        <div class="step" id="step-2">
+            <div class="step-icon">🍳</div>
+            <div class="step-content">
+                <strong>Preparing your Food</strong>
+                <p>Chef is cooking your fresh meal</p>
+            </div>
+        </div>
+        <div class="step-line" id="line-2"></div>
+        <div class="step" id="step-3">
+            <div class="step-icon">🛵</div>
+            <div class="step-content">
+                <strong>Out for Delivery</strong>
+                <p>Partner is on the way to your address</p>
+            </div>
+        </div>
+        <div class="step-line" id="line-3"></div>
+        <div class="step" id="step-4">
+            <div class="step-icon">🎉</div>
+            <div class="step-content">
+                <strong>Delivered!</strong>
+                <p>Enjoy your meal & rate your experience</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simulated Map / Partner Banner -->
+    <div class="delivery-map-card">
+        <div class="map-graphic">
+            <div class="route-line"></div>
+            <div class="map-point restaurant-point">🏢 Restaurant</div>
+            <div class="bike-marker" id="bike-marker">🛵💨</div>
+            <div class="map-point home-point">🏠 Home</div>
+        </div>
+        <div class="partner-card">
+            <div class="partner-avatar">👨‍🦱</div>
+            <div class="partner-info">
+                <strong>Ramesh Kumar</strong>
+                <p>Delivery Partner • ⭐ 4.9 (1,240+ deliveries)</p>
+            </div>
+            <button class="call-partner-btn" onclick="alert('📞 Calling Ramesh Kumar (+91 98765 43210)...')">📞 Call</button>
+        </div>
+    </div>
+
+    <!-- Ordered Items Summary -->
+    <div class="tracker-order-summary">
+        <h4>Order Summary</h4>
+        <div id="tracker-items-list">
+            <!-- Injected via JavaScript -->
+        </div>
+    </div>
+
+    <div class="tracker-footer">
+        <button class="tracker-done-btn" onclick="closeTracker()">Order More Food</button>
     </div>
 </div>
 
@@ -180,12 +552,15 @@
         <h2>Login / Sign up</h2>
         <p>or <span class="highlight">create an account with your phone</span></p>
         <div class="form-group">
-            <input type="tel" id="user-phone" placeholder="Phone number" maxlength="10">
+            <input type="tel" id="user-phone" placeholder="Enter 10-digit phone number" maxlength="10">
         </div>
         <button class="modal-action-btn" onclick="handleLogin()">CONTINUE</button>
         <p class="terms">By clicking on Login, I accept the Terms & Conditions & Privacy Policy</p>
     </div>
 </div>
+
+<!-- TOAST NOTIFICATION CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
 
 <!-- FOOTER -->
 <footer class="footer">
